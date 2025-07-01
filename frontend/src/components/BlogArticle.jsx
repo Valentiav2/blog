@@ -1,69 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, Share2, Calendar, User, ArrowLeft, BookOpen, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 
 const BlogArticle = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isShared, setIsShared] = useState(false);
+  const [article, setArticle] = useState(null);
 
-  // Mock data for the article
-  const article = {
-    id: 1,
-    title: "L'Art de l'Excellence : Découverte des Métiers d'Art Français",
-    subtitle: "Un voyage au cœur du patrimoine artisanal français",
-    author: {
-      name: "Marie Dubois",
-      role: "Experte en Patrimoine Culturel",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+  // Mock articles data (in real app, this would come from API)
+  const articlesData = {
+    'art-excellence-metiers-francais': {
+      id: 1,
+      title: "L'Art de l'Excellence : Découverte des Métiers d'Art Français",
+      subtitle: "Un voyage au cœur du patrimoine artisanal français",
+      author: {
+        name: "Marie Dubois",
+        role: "Experte en Patrimoine Culturel",
+        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+      },
+      publishDate: "15 Juillet 2024",
+      readTime: "8 min de lecture",
+      category: "Patrimoine",
+      tags: ["Art", "Patrimoine", "France", "Artisanat"],
+      coverImages: [
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop"
+      ],
+      content: `
+        <p>Dans un monde où la technologie règne en maître, les métiers d'art français continuent de fasciner par leur authenticité et leur excellence. Ces savoir-faire ancestraux, transmis de génération en génération, représentent l'âme même de notre patrimoine culturel.</p>
+
+        <h2>Un Héritage Millénaire</h2>
+        <p>La France compte plus de 300 métiers d'art officiellement reconnus, de la marqueterie à la verrerie d'art, en passant par la tapisserie et l'orfèvrerie. Chacun de ces métiers raconte une histoire, celle d'hommes et de femmes passionnés qui ont su préserver et faire évoluer des techniques séculaires.</p>
+
+        <blockquote>
+          "L'artisanat d'art, c'est la rencontre entre la tradition et l'innovation, entre le geste ancestral et la créativité contemporaine."
+          <cite>— Jean-Claude Bellanger, Maître Artisan</cite>
+        </blockquote>
+
+        <h2>Les Gardiens de la Tradition</h2>
+        <p>Dans les ateliers dispersés aux quatre coins de l'Hexagone, les artisans d'art perpétuent des gestes millénaires. Leurs mains expertes façonnent la matière avec une précision que seule l'expérience peut conférer.</p>
+
+        <h3>Les Régions d'Excellence</h3>
+        <p>Chaque région de France possède ses spécialités : la cristallerie en Lorraine, la dentelle en Normandie, la céramique en Provence. Cette diversité géographique enrichit notre patrimoine artisanal et lui confère une identité unique.</p>
+
+        <h2>Un Avenir Prometteur</h2>
+        <p>Loin d'être figés dans le passé, les métiers d'art évoluent et s'adaptent aux défis contemporains. Les nouvelles générations d'artisans intègrent les technologies modernes tout en préservant l'essence de leur art.</p>
+      `,
+      stats: {
+        views: 2547,
+        likes: 189,
+        comments: 23
+      }
     },
-    publishDate: "15 Juillet 2024",
-    readTime: "8 min de lecture",
-    category: "Patrimoine",
-    tags: ["Art", "Patrimoine", "France", "Artisanat"],
-    coverImages: [
-      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop"
-    ],
-    content: `
-      <p>Dans un monde où la technologie règne en maître, les métiers d'art français continuent de fasciner par leur authenticité et leur excellence. Ces savoir-faire ancestraux, transmis de génération en génération, représentent l'âme même de notre patrimoine culturel.</p>
+    'chateaux-loire-renaissance': {
+      id: 2,
+      title: "Les Châteaux de la Loire : Joyaux de la Renaissance",
+      subtitle: "Architecture et histoire des merveilles de la vallée de la Loire",
+      author: {
+        name: "Pierre Moreau",
+        role: "Historien de l'Architecture",
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      },
+      publishDate: "12 Juillet 2024",
+      readTime: "6 min de lecture",
+      category: "Architecture",
+      tags: ["Châteaux", "Loire", "Renaissance", "Histoire"],
+      coverImages: [
+        "https://images.unsplash.com/photo-1549813069-f95e44d7f498?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1549813069-f95e44d7f498?w=800&h=600&fit=crop"
+      ],
+      content: `
+        <p>Les châteaux de la Loire incarnent l'apogée de l'art de vivre français, témoins d'une époque où l'art et le pouvoir se conjuguaient dans la pierre. Ces merveilles architecturales nous racontent l'histoire de la Renaissance française.</p>
 
-      <h2>Un Héritage Millénaire</h2>
-      <p>La France compte plus de 300 métiers d'art officiellement reconnus, de la marqueterie à la verrerie d'art, en passant par la tapisserie et l'orfèvrerie. Chacun de ces métiers raconte une histoire, celle d'hommes et de femmes passionnés qui ont su préserver et faire évoluer des techniques séculaires.</p>
+        <h2>L'Héritage de la Renaissance</h2>
+        <p>Au XVIe siècle, la vallée de la Loire devient le théâtre d'une révolution architecturale. Les rois de France, inspirés par les merveilles italiennes, transforment leurs résidences en véritables joyaux artistiques.</p>
 
-      <blockquote>
-        "L'artisanat d'art, c'est la rencontre entre la tradition et l'innovation, entre le geste ancestral and la créativité contemporaine."
-        <cite>— Jean-Claude Bellanger, Maître Artisan</cite>
-      </blockquote>
+        <blockquote>
+          "Les châteaux de la Loire ne sont pas seulement des monuments, ils sont la cristallisation d'un rêve royal, celui d'une France rayonnante."
+          <cite>— André Malraux</cite>
+        </blockquote>
 
-      <h2>Les Gardiens de la Tradition</h2>
-      <p>Dans les ateliers dispersés aux quatre coins de l'Hexagone, les artisans d'art perpétuent des gestes millénaires. Leurs mains expertes façonnent la matière avec une précision que seule l'expérience peut conférer.</p>
+        <h2>Chambord : Le Rêve de François Ier</h2>
+        <p>Chambord demeure l'exemple le plus spectaculaire de cette ambition royale. Son escalier à vis double, attribué à Léonard de Vinci, symbolise l'ingéniosité française.</p>
 
-      <h3>Les Régions d'Excellence</h3>
-      <p>Chaque région de France possède ses spécialités : la cristallerie en Lorraine, la dentelle en Normandie, la céramique en Provence. Cette diversité géographique enrichit notre patrimoine artisanal et lui confère une identité unique.</p>
-
-      <h2>Un Avenir Prometteur</h2>
-      <p>Loin d'être figés dans le passé, les métiers d'art évoluent et s'adaptent aux défis contemporains. Les nouvelles générations d'artisans intègrent les technologies modernes tout en préservant l'essence de leur art.</p>
-    `,
-    stats: {
-      views: 2547,
-      likes: 189,
-      comments: 23
+        <h3>Un Patrimoine Vivant</h3>
+        <p>Aujourd'hui, ces châteaux continuent d'émerveiller les visiteurs du monde entier, témoignant de la grandeur passée et de l'excellence française en matière de patrimoine.</p>
+      `,
+      stats: {
+        views: 1823,
+        likes: 145,
+        comments: 18
+      }
     }
   };
 
   const recentArticles = [
     {
-      id: 2,
-      title: "Les Châteaux de la Loire : Joyaux de la Renaissance",
-      image: "https://images.unsplash.com/photo-1549813069-f95e44d7f498?w=300&h=200&fit=crop",
-      date: "12 Juillet 2024",
-      readTime: "6 min"
-    },
-    {
       id: 3,
+      slug: 'gastronomie-francaise-art-vivre',
       title: "Gastronomie Française : L'Art de Vivre à la Française",
       image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop",
       date: "10 Juillet 2024",
@@ -71,12 +112,50 @@ const BlogArticle = () => {
     },
     {
       id: 4,
+      slug: 'festivals-ete-celebration-culture',
       title: "Les Festivals d'Été : Célébration de la Culture",
       image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=200&fit=crop",
       date: "8 Juillet 2024",
       readTime: "7 min"
+    },
+    {
+      id: 5,
+      slug: 'jardins-francais-art-paysage',
+      title: "Jardins à la Française : L'Art du Paysage",
+      image: "https://images.unsplash.com/photo-1585036156171-384164a8c675?w=300&h=200&fit=crop",
+      date: "5 Juillet 2024",
+      readTime: "9 min"
     }
   ];
+
+  useEffect(() => {
+    // In real app, fetch article by slug from API
+    const articleData = articlesData[slug];
+    if (articleData) {
+      setArticle(articleData);
+    } else {
+      // Handle article not found
+      navigate('/blog');
+    }
+  }, [slug, navigate]);
+
+  if (!article) {
+    return (
+      <div className="min-h-screen bg-[#242328] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📄</div>
+          <h2 className="text-2xl font-bold mb-2">Article introuvable</h2>
+          <p className="text-gray-400 mb-6">L'article que vous recherchez n'existe pas.</p>
+          <Button
+            onClick={() => navigate('/blog')}
+            className="bg-[#D6B769] text-black hover:bg-[#D6B769]/90"
+          >
+            Retour au blog
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
@@ -85,11 +164,13 @@ const BlogArticle = () => {
   const handleShare = () => {
     setIsShared(true);
     setTimeout(() => setIsShared(false), 2000);
-    navigator.share && navigator.share({
-      title: article.title,
-      text: article.subtitle,
-      url: window.location.href
-    });
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.subtitle,
+        url: window.location.href
+      });
+    }
   };
 
   return (
@@ -103,10 +184,10 @@ const BlogArticle = () => {
                 variant="ghost" 
                 size="sm" 
                 className="text-[#D6B769] hover:bg-[#D6B769]/10 hover:text-[#D6B769]"
-                onClick={() => window.history.back()}
+                onClick={() => navigate('/blog')}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Retour
+                Retour au blog
               </Button>
               <div className="h-6 w-px bg-[#27282C]" />
               <div className="text-2xl font-bold text-[#D6B769]">VALENTIA</div>
@@ -288,7 +369,11 @@ const BlogArticle = () => {
                 </h3>
                 <div className="space-y-4">
                   {recentArticles.map((recentArticle) => (
-                    <div key={recentArticle.id} className="group cursor-pointer">
+                    <div 
+                      key={recentArticle.id} 
+                      className="group cursor-pointer"
+                      onClick={() => navigate(`/blog/${recentArticle.slug}`)}
+                    >
                       <div className="flex gap-3">
                         <div className="w-16 h-16 rounded-md overflow-hidden border border-[#D6B769]/20">
                           <img 
